@@ -1,0 +1,32 @@
+{
+  "id": "@shopgate-project/userlike",
+  "version": "1.0.0-rc.1",
+  "components": [
+    {
+      "id": "Subscribers",
+      "path": "frontend/subscriptions.js",
+      "type": "subscribers"
+    }
+  ],
+  "configuration": {
+    "sdkUrl": {
+      "type": "admin",
+      "destination": "frontend",
+      "default": "https://userlike-cdn-widgets.s3-eu-west-1.amazonaws.com/e9232d7c4b2e5cc96b60b4eb994c3608c60ec5862fbcb1c901e4365e6ed8b85b.js",
+      "params": {
+        "type": "text",
+        "label": "Url of userlike \"Live Chat\" JavaScript sdk"
+      }
+    },
+    "pagesWithoutWidget": {
+      "type": "admin",
+      "destination": "frontend",
+      "default":[
+      ],
+      "params": {
+        "type": "json",
+        "label": "Page patterns which should not have the chat widget"
+      }
+    }
+  }
+}
