@@ -1,6 +1,6 @@
 {
   "id": "@shopgate-project/userlike",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "components": [
     {
       "id": "Subscribers",
@@ -15,13 +15,15 @@
       "default": "https://userlike-cdn-widgets.s3-eu-west-1.amazonaws.com/e9232d7c4b2e5cc96b60b4eb994c3608c60ec5862fbcb1c901e4365e6ed8b85b.js",
       "params": {
         "type": "text",
-        "label": "Url of userlike \"Live Chat\" JavaScript sdk"
+        "label": "Url of userlike JavaScript sdk"
       }
     },
     "pagesWithoutWidget": {
       "type": "admin",
       "destination": "frontend",
       "default":[
+        "/cart",
+        "/login"
       ],
       "params": {
         "type": "json",
