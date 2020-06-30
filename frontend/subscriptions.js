@@ -17,6 +17,10 @@ export default (subscribe) => {
     display: 'var(--userlike-um-display) !important',
   });
 
+  css.global('#userlike-popup', {
+    top: 'var(--safe-area-inset-top) !important',
+  });
+
   // Flag to indicate if "live chat" or "unified messaging" is used
   let isUMWidget = false;
 
