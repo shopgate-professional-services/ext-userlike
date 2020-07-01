@@ -2,6 +2,8 @@ import { css } from 'glamor';
 import { appDidStart$, logger, routeDidEnter$ } from '@shopgate/engage/core';
 import { userDataReceived$, userDidLogout$ } from '@shopgate/engage/user';
 import { makeGetRoutePattern } from '@shopgate/pwa-common/selectors/router';
+import UIEvents from '@shopgate/pwa-core/emitters/ui';
+import { SHEET_EVENTS } from '@shopgate/pwa-ui-shared/Sheet';
 import { sdkUrl, pagesWithoutWidget } from './config';
 import { getUserData } from './selectors';
 
@@ -17,8 +19,10 @@ export default (subscribe) => {
     display: 'var(--userlike-um-display) !important',
   });
 
-  css.global('#userlike-popup', {
+  css.global('#userlike-popup, #uslk-messenger', {
     top: 'var(--safe-area-inset-top) !important',
+    paddingBottom: 'var(--safe-area-inset-bottom) !important',
+    background: 'rgb(249, 249, 249)',
   });
 
   // Flag to indicate if "live chat" or "unified messaging" is used
@@ -71,6 +75,15 @@ export default (subscribe) => {
       if (pagesWithoutWidget.includes(pattern)) {
         hideWidget();
       }
+
+      UIEvents.addListener(SHEET_EVENTS.OPEN, hideWidget);
+      UIEvents.addListener(SHEET_EVENTS.CLOSE, () => {
+        const currentPattern = makeGetRoutePattern()(getState());
+
+        if (!pagesWithoutWidget.includes(currentPattern)) {
+          showWidget();
+        }
+      });
 
       const user = getUserData(state);
 
