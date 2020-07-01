@@ -21,8 +21,14 @@ export default (subscribe) => {
 
   css.global('#userlike-popup#userlike-popup, #uslk-messenger#uslk-messenger', {
     top: 'var(--safe-area-inset-top) !important',
-    paddingBottom: 'var(--safe-area-inset-bottom) !important',
     background: 'rgb(249, 249, 249)',
+  });
+
+  css.global('#userlike.userlike-mobile.userlike-mobile #userlike-chat-content', {
+    bottom: 'max(60px, calc(var(--safe-area-inset-bottom) * 3))',
+  });
+  css.global('#userlike-chat-scroll-textarea#userlike-chat-scroll-textarea', {
+    bottom: 'var(--safe-area-inset-bottom)',
   });
 
   // Flag to indicate if "live chat" or "unified messaging" is used
