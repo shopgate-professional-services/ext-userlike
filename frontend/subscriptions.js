@@ -19,7 +19,7 @@ export default (subscribe) => {
     display: 'var(--userlike-um-display) !important',
   });
 
-  css.global('#userlike-popup, #uslk-messenger', {
+  css.global('#userlike-popup#userlike-popup, #uslk-messenger#uslk-messenger', {
     top: 'var(--safe-area-inset-top) !important',
     paddingBottom: 'var(--safe-area-inset-bottom) !important',
     background: 'rgb(249, 249, 249)',
