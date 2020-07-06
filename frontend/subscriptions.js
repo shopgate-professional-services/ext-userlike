@@ -21,6 +21,7 @@ export default (subscribe) => {
 
   css.global('#userlike-popup#userlike-popup, #uslk-messenger#uslk-messenger', {
     top: 'var(--safe-area-inset-top) !important',
+    paddingBottom: 'calc(var(--safe-area-inset-bottom) * 2) !important',
     background: 'rgb(249, 249, 249)',
   });
 
