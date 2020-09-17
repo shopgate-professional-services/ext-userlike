@@ -12,14 +12,14 @@ export default (subscribe) => {
   let ready = false;
 
   // "live chat" -> userlike-tab. "UM" -> #uslk-button
-  css.global('#userlike-tab, #uslk-button', {
+  css.global('#userlike-tab, #uslk-button, div[id^="userlike-"] iframe', {
     bottom: 'calc(10px + var(--safe-area-inset-bottom) + var(--footer-height) ) !important',
   });
-  css.global('#userlikeButtonContainer', {
+  css.global('#userlikeButtonContainer, div[id^="userlike-"]', {
     display: 'var(--userlike-um-display) !important',
   });
 
-  css.global('#userlike-popup#userlike-popup, #uslk-messenger#uslk-messenger', {
+  css.global('#userlike-popup#userlike-popup, #uslk-messenger#uslk-messenger, div[id^="userlike-"] iframe[title="Messenger"]', {
     top: 'var(--safe-area-inset-top) !important',
     paddingBottom: 'calc(var(--safe-area-inset-bottom) * 2) !important',
     background: 'rgb(249, 249, 249)',
