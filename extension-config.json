@@ -12,7 +12,7 @@
     "sdkUrl": {
       "type": "admin",
       "destination": "frontend",
-      "default": "https://userlike-cdn-widgets.s3-eu-west-1.amazonaws.com/cd9bc42380a21d231a607bbea4f01c2fa1424580cf9e3a860f25db983eaf24aa.js",
+      "default": "",
       "params": {
         "type": "text",
         "label": "Url of userlike JavaScript sdk"
