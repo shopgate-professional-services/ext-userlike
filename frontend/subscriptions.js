@@ -13,7 +13,7 @@ export default (subscribe) => {
 
   // "live chat" -> userlike-tab. "UM" -> #uslk-button
   css.global('#userlike-tab, #uslk-button, div[id^="userlike-"] iframe', {
-    bottom: 'calc(10px + var(--safe-area-inset-bottom) + var(--footer-height) ) !important',
+    bottom: 'calc(16px + var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--footer-height) ) !important',
   });
   css.global('#userlikeButtonContainer, div[id^="userlike-"]', {
     display: 'var(--userlike-um-display) !important',
