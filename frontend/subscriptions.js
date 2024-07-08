@@ -11,8 +11,8 @@ let comfortCookiesAccepted$;
 let getAreStatisticsCookiesSet;
 
 try {
-  // Try to import cookie consent related modules. "required" is used since the currently deployed
-  // PWA might not have the features implemented yet.
+  // Try to import cookie consent related modules. "require()" is used since the currently deployed
+  // PWA might not have the required modules implemented yet.
 
   /* eslint-disable global-require */
   ({ comfortCookiesAccepted$ } = require('@shopgate/engage/tracking/streams'));
