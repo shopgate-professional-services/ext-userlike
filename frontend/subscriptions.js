@@ -14,18 +14,15 @@ try {
   // Try to import cookie consent related modules. "require()" is used since the currently deployed
   // PWA might not have the required modules implemented yet.
 
-  /* eslint-disable global-require */
+  /* eslint-disable global-require, import/no-unresolved */
   ({ comfortCookiesAccepted$ } = require('@shopgate/engage/tracking/streams'));
   ({ getAreStatisticsCookiesAccepted } = require('@shopgate/engage/tracking/selectors'));
-  /* eslint-enable global-require */
+  /* eslint-enable global-require, import/no-unresolved */
 } catch (e) {
-  // nothing to do here
+  // Configure fallbacks in case of an import error
+  comfortCookiesAccepted$ = appDidStart$;
+  getAreStatisticsCookiesAccepted = () => true;
 }
-
-// Prepare stream for extension initialization with fallback
-const initializeWidget$ = comfortCookiesAccepted$ || appDidStart$;
-// Prepare selector to determine if user tracking is allowed with fallback that always allows
-const getIsUserTrackingAllowed = getAreStatisticsCookiesAccepted || (() => true);
 
 export default (subscribe) => {
   const { style } = document.documentElement;
@@ -56,7 +53,7 @@ export default (subscribe) => {
     }
   };
 
-  subscribe(initializeWidget$, ({ getState }) => {
+  subscribe(comfortCookiesAccepted$, ({ getState }) => {
     // "live chat" -> userlike-tab. "UM" -> #uslk-button
     css.global('#userlike-tab, #uslk-button, div[id^="userlike-"] iframe', {
       bottom: 'calc(16px + var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--footer-height) ) !important',
@@ -125,7 +122,7 @@ export default (subscribe) => {
   });
 
   subscribe(userDataReceived$, ({ getState }) => {
-    const isUserTrackingAllowed = getIsUserTrackingAllowed(getState());
+    const isUserTrackingAllowed = getAreStatisticsCookiesAccepted(getState());
 
     if (!window.userlike || !ready || !isUserTrackingAllowed) {
       return;
