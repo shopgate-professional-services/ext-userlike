@@ -14,10 +14,11 @@ try {
   // Try to import cookie consent related modules. "require()" is used since the currently deployed
   // PWA might not have the required modules implemented yet.
 
-  /* eslint-disable global-require, import/no-unresolved */
+  /* eslint-disable eslint-comments/no-unlimited-disable */
+  /* eslint-disable */
   ({ comfortCookiesAccepted$ } = require('@shopgate/engage/tracking/streams'));
   ({ getAreStatisticsCookiesAccepted } = require('@shopgate/engage/tracking/selectors'));
-  /* eslint-enable global-require, import/no-unresolved */
+  /* eslint-enable  */
 } catch (e) {
   // Configure fallbacks in case of an import error
   comfortCookiesAccepted$ = appDidStart$;
