@@ -8,7 +8,7 @@ import { sdkUrl, pagesWithoutWidget } from './config';
 import { getUserData } from './selectors';
 
 let comfortCookiesAccepted$;
-let getAreStatisticsCookiesSet;
+let getAreStatisticsCookiesAccepted;
 
 try {
   // Try to import cookie consent related modules. "require()" is used since the currently deployed
@@ -16,7 +16,7 @@ try {
 
   /* eslint-disable global-require */
   ({ comfortCookiesAccepted$ } = require('@shopgate/engage/tracking/streams'));
-  ({ getAreStatisticsCookiesSet } = require('@shopgate/engage/tracking/selectors'));
+  ({ getAreStatisticsCookiesAccepted } = require('@shopgate/engage/tracking/selectors'));
   /* eslint-enable global-require */
 } catch (e) {
   // nothing to do here
@@ -25,7 +25,7 @@ try {
 // Prepare stream for extension initialization with fallback
 const initializeWidget$ = comfortCookiesAccepted$ || appDidStart$;
 // Prepare selector to determine if user tracking is allowed with fallback that always allows
-const getIsUserTrackingAllowed = getAreStatisticsCookiesSet || (() => true);
+const getIsUserTrackingAllowed = getAreStatisticsCookiesAccepted || (() => true);
 
 export default (subscribe) => {
   const { style } = document.documentElement;
