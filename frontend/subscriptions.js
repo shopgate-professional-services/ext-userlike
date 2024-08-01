@@ -7,31 +7,27 @@ import { SHEET_EVENTS } from '@shopgate/pwa-ui-shared/Sheet';
 import { sdkUrl, pagesWithoutWidget } from './config';
 import { getUserData } from './selectors';
 
+let comfortCookiesAccepted$;
+let getAreStatisticsCookiesAccepted;
+
+try {
+  // Try to import cookie consent related modules. "require()" is used since the currently deployed
+  // PWA might not have the required modules implemented yet.
+
+  /* eslint-disable eslint-comments/no-unlimited-disable */
+  /* eslint-disable */
+  ({ comfortCookiesAccepted$ } = require('@shopgate/engage/tracking/streams'));
+  ({ getAreStatisticsCookiesAccepted } = require('@shopgate/engage/tracking/selectors'));
+  /* eslint-enable  */
+} catch (e) {
+  // Configure fallbacks in case of an import error
+  comfortCookiesAccepted$ = appDidStart$;
+  getAreStatisticsCookiesAccepted = () => true;
+}
+
 export default (subscribe) => {
   const { style } = document.documentElement;
   let ready = false;
-
-  // "live chat" -> userlike-tab. "UM" -> #uslk-button
-  css.global('#userlike-tab, #uslk-button, div[id^="userlike-"] iframe', {
-    bottom: 'calc(16px + var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--footer-height) ) !important',
-  });
-  css.global('#userlikeButtonContainer, div[id^="userlike-"]', {
-    display: 'var(--userlike-um-display) !important',
-  });
-
-  css.global('#userlike-popup#userlike-popup, #uslk-messenger#uslk-messenger, div[id^="userlike-"] iframe[title="Messenger"]', {
-    top: 'var(--safe-area-inset-top) !important',
-    paddingTop: 'var(--safe-area-inset-top) !important',
-    paddingBottom: 'calc(var(--safe-area-inset-bottom) * 2) !important',
-    background: 'rgb(34, 77, 143)',
-  });
-
-  css.global('#userlike.userlike-mobile.userlike-mobile #userlike-chat-content', {
-    bottom: 'max(60px, calc(var(--safe-area-inset-bottom) * 3))',
-  });
-  css.global('#userlike-chat-scroll-textarea#userlike-chat-scroll-textarea', {
-    bottom: 'var(--safe-area-inset-bottom)',
-  });
 
   // Flag to indicate if "live chat" or "unified messaging" is used
   let isUMWidget = false;
@@ -58,7 +54,29 @@ export default (subscribe) => {
     }
   };
 
-  subscribe(appDidStart$, ({ getState }) => {
+  subscribe(comfortCookiesAccepted$, ({ getState }) => {
+    // "live chat" -> userlike-tab. "UM" -> #uslk-button
+    css.global('#userlike-tab, #uslk-button, div[id^="userlike-"] iframe', {
+      bottom: 'calc(16px + var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--footer-height) ) !important',
+    });
+    css.global('#userlikeButtonContainer, div[id^="userlike-"]', {
+      display: 'var(--userlike-um-display) !important',
+    });
+
+    css.global('#userlike-popup#userlike-popup, #uslk-messenger#uslk-messenger, div[id^="userlike-"] iframe[title="Messenger"]', {
+      top: 'var(--safe-area-inset-top) !important',
+      paddingTop: 'var(--safe-area-inset-top) !important',
+      paddingBottom: 'calc(var(--safe-area-inset-bottom) * 2) !important',
+      background: 'rgb(34, 77, 143)',
+    });
+
+    css.global('#userlike.userlike-mobile.userlike-mobile #userlike-chat-content', {
+      bottom: 'max(60px, calc(var(--safe-area-inset-bottom) * 3))',
+    });
+    css.global('#userlike-chat-scroll-textarea#userlike-chat-scroll-textarea', {
+      bottom: 'var(--safe-area-inset-bottom)',
+    });
+
     if (!sdkUrl) {
       logger.warn('Userlike: No url configured');
       return;
@@ -105,7 +123,9 @@ export default (subscribe) => {
   });
 
   subscribe(userDataReceived$, ({ getState }) => {
-    if (!window.userlike || !ready) {
+    const isUserTrackingAllowed = getAreStatisticsCookiesAccepted(getState());
+
+    if (!window.userlike || !ready || !isUserTrackingAllowed) {
       return;
     }
 
@@ -120,6 +140,10 @@ export default (subscribe) => {
   });
 
   subscribe(userDidLogout$, () => {
+    if (!window.userlike || !ready) {
+      return;
+    }
+
     window.userlike.setData({});
     window.userlike.userlikeUpdateAPI();
   });

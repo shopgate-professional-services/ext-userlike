@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0] 2023-07-08
+### Added
+- Support for PWA cookie consent feature. Widget initialization is postponed till users finished the consent process. When no "comfort" consent is given, the widget will not show up.
+
 ## [1.0.4] 2022-12-06
 ### Fixed
 - changed styling to fit devices with notch.
