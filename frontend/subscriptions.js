@@ -4,7 +4,7 @@ import { userDataReceived$, userDidLogout$ } from '@shopgate/engage/user';
 import { makeGetRoutePattern } from '@shopgate/pwa-common/selectors/router';
 import UIEvents from '@shopgate/pwa-core/emitters/ui';
 import { SHEET_EVENTS } from '@shopgate/pwa-ui-shared/Sheet';
-import { sdkUrl, pagesWithoutWidget } from './config';
+import { sdkUrl, pagesWithoutWidget, iframeChatTitle } from './config';
 import { getUserData } from './selectors';
 
 let comfortCookiesAccepted$;
@@ -67,7 +67,11 @@ export default (subscribe) => {
       top: 'var(--safe-area-inset-top) !important',
       paddingTop: 'var(--safe-area-inset-top) !important',
       paddingBottom: 'calc(var(--safe-area-inset-bottom) * 2) !important',
-      background: 'rgb(34, 77, 143)',
+    });
+
+    css.global(`iframe[title="${iframeChatTitle || ''}"]`, {
+      paddingTop: 'var(--safe-area-inset-top) !important',
+      paddingBottom: 'var(--safe-area-inset-bottom) !important',
     });
 
     css.global('#userlike.userlike-mobile.userlike-mobile #userlike-chat-content', {

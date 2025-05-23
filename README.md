@@ -19,6 +19,10 @@ Example:
 ]
 ```
 
+### iframeChatTitle (string)
+Defines the `title` attribute used to identify the chat iframe
+
+
 ## About Shopgate
 
 Shopgate is the leading mobile commerce platform.
