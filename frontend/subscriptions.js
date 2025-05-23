@@ -5,7 +5,7 @@ import { makeGetRoutePattern } from '@shopgate/pwa-common/selectors/router';
 import UIEvents from '@shopgate/pwa-core/emitters/ui';
 import { SHEET_EVENTS } from '@shopgate/pwa-ui-shared/Sheet';
 import { sdkUrl, pagesWithoutWidget, iframeChatTitle } from './config';
-import { getUserData } from './selectors';
+import { getUserData, getIsTablet } from './selectors';
 
 let comfortCookiesAccepted$;
 let getAreStatisticsCookiesAccepted;
@@ -55,6 +55,8 @@ export default (subscribe) => {
   };
 
   subscribe(comfortCookiesAccepted$, ({ getState }) => {
+    const isTablet = getIsTablet(getState());
+
     // "live chat" -> userlike-tab. "UM" -> #uslk-button
     css.global('#userlike-tab, #uslk-button, div[id^="userlike-"] iframe', {
       bottom: 'calc(16px + var(--tabbar-height) + var(--safe-area-inset-bottom) + var(--footer-height) ) !important',
@@ -69,10 +71,12 @@ export default (subscribe) => {
       paddingBottom: 'calc(var(--safe-area-inset-bottom) * 2) !important',
     });
 
-    css.global(`iframe[title="${iframeChatTitle || ''}"]`, {
-      paddingTop: 'var(--safe-area-inset-top) !important',
-      paddingBottom: 'var(--safe-area-inset-bottom) !important',
-    });
+    if (!isTablet) {
+      css.global(`iframe[title="${iframeChatTitle || ''}"]`, {
+        paddingTop: 'var(--safe-area-inset-top) !important',
+        paddingBottom: 'var(--safe-area-inset-bottom) !important',
+      });
+    }
 
     css.global('#userlike.userlike-mobile.userlike-mobile #userlike-chat-content', {
       bottom: 'max(60px, calc(var(--safe-area-inset-bottom) * 3))',
