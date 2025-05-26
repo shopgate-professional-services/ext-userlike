@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [1.2.0] 2025-05-23
 ### Added
 - Added `iframeChatTitle` config key for iframe `title` selector targeting
+- Added `iframeBackgroundColor` config key to prevent underlying elements showing through
+
 ### Fixed
 - Chat iframe no longer overlaps the safe area
 

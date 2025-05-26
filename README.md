@@ -22,6 +22,9 @@ Example:
 ### iframeChatTitle (string)
 Defines the `title` attribute used to identify the chat iframe
 
+### iframeBackgroundColor (string)
+Defines the background color of the iframe
+
 
 ## About Shopgate
 

@@ -4,7 +4,12 @@ import { userDataReceived$, userDidLogout$ } from '@shopgate/engage/user';
 import { makeGetRoutePattern } from '@shopgate/pwa-common/selectors/router';
 import UIEvents from '@shopgate/pwa-core/emitters/ui';
 import { SHEET_EVENTS } from '@shopgate/pwa-ui-shared/Sheet';
-import { sdkUrl, pagesWithoutWidget, iframeChatTitle } from './config';
+import {
+  sdkUrl,
+  pagesWithoutWidget,
+  iframeChatTitle,
+  iframeBackgroundColor,
+} from './config';
 import { getUserData, getIsTablet } from './selectors';
 
 let comfortCookiesAccepted$;
@@ -75,6 +80,7 @@ export default (subscribe) => {
       css.global(`iframe[title="${iframeChatTitle || ''}"]`, {
         paddingTop: 'var(--safe-area-inset-top) !important',
         paddingBottom: 'var(--safe-area-inset-bottom) !important',
+        background: iframeBackgroundColor || '#fff',
       });
     }
 

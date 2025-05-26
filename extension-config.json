@@ -38,6 +38,15 @@
         "type": "json",
         "label": "Specifies the title attribute of the chat iframe"
       }
+    },
+    "iframeBackgroundColor": {
+      "type": "admin",
+      "destination": "frontend",
+      "default": "",
+      "params": {
+        "type": "json",
+        "label": "Defines the background color of the iframe"
+      }
     }
   }
 }
