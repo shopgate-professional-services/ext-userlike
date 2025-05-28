@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import { getUserDisplayName, getUserEmail } from '@shopgate/engage/user';
+import { getDeviceInformation } from '@shopgate/engage/core';
 
 export const getUserData = createSelector(
   getUserDisplayName,
@@ -14,4 +15,9 @@ export const getUserData = createSelector(
       email,
     };
   }
+);
+
+export const getIsTablet = createSelector(
+  getDeviceInformation,
+  deviceInformation => deviceInformation && deviceInformation.type === 'tablet'
 );

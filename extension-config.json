@@ -1,6 +1,6 @@
 {
   "id": "@shopgate-project/userlike",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "components": [
     {
       "id": "Subscribers",
@@ -28,6 +28,24 @@
       "params": {
         "type": "json",
         "label": "Page patterns which should not have the chat widget"
+      }
+    },
+    "iframeChatTitle": {
+      "type": "admin",
+      "destination": "frontend",
+      "default": "Kundensupport-Chat",
+      "params": {
+        "type": "json",
+        "label": "Specifies the title attribute of the chat iframe"
+      }
+    },
+    "iframeBackgroundColor": {
+      "type": "admin",
+      "destination": "frontend",
+      "default": "",
+      "params": {
+        "type": "json",
+        "label": "Defines the background color of the iframe"
       }
     }
   }
