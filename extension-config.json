@@ -1,6 +1,6 @@
 {
   "id": "@shopgate-project/userlike",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "components": [
     {
       "id": "Subscribers",
