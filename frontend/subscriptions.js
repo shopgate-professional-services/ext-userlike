@@ -76,6 +76,17 @@ export default (subscribe) => {
       paddingBottom: 'calc(var(--safe-area-inset-bottom) * 2) !important',
     });
 
+    // Position the userlike chat button above the footer
+    css.global('[data-test-id="userlike-container"] [data-test-id="button"] > div', {
+      transition: 'bottom 0.2s ease-in-out',
+      // Take care about a little gap between chat button and footer when present.
+      // When the device has safe area insets, position the button directly above the safe area,
+      // when not keep a gap of 16px.
+      bottom: 'max(calc(var(--footer-height) + 16px), max(var(--safe-area-inset-bottom), 16px))',
+      // Widget visibility set via css variable (variable set in hideWidget/showWidget)
+      display: 'var(--userlike-um-display)',
+    });
+
     if (!isTablet) {
       css.global(`iframe[title="${iframeChatTitle || ''}"]`, {
         paddingTop: 'var(--safe-area-inset-top) !important',
