@@ -1,6 +1,6 @@
 {
   "id": "@shopgate-project/userlike",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "components": [
     {
       "id": "Subscribers",
@@ -9,13 +9,13 @@
     }
   ],
   "configuration": {
-    "sdkUrl": {
+    "widgetKey": {
       "type": "admin",
       "destination": "frontend",
       "default": "",
       "params": {
         "type": "text",
-        "label": "Url of userlike JavaScript sdk"
+        "label": "Userlike Widget Key"
       }
     },
     "pagesWithoutWidget": {
@@ -33,7 +33,7 @@
     "iframeChatTitle": {
       "type": "admin",
       "destination": "frontend",
-      "default": "Kundensupport-Chat",
+      "default": "Chat",
       "params": {
         "type": "json",
         "label": "Specifies the title attribute of the chat iframe"

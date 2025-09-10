@@ -1,11 +1,11 @@
 # Shopgate Connect - Userlike Live chat
 
-This extension integrates a Shopgate app with the [Userlike](https://www.userlike.com/) Live chat widget.
+This extension integrates the [Userlike Messenger API](https://github.com/userlike/messenger) to provide live chat functionality.
 
 ## Configuration
 
-### sdkUrl (string)
-Url to the chat widgets Javascript file
+### widgetKey (string)
+The Userlike widget key
 
 ### pagesWithoutWidget (array)
 Array of Page patterns which should not have the chat widget
