@@ -3,6 +3,8 @@ import { createMessenger } from '@userlike/messenger';
 import { appDidStart$, logger, routeDidEnter$ } from '@shopgate/engage/core';
 import { userDataReceived$, userDidLogout$ } from '@shopgate/engage/user';
 import { makeGetRoutePattern } from '@shopgate/pwa-common/selectors/router';
+import UIEvents from '@shopgate/pwa-core/emitters/ui';
+import { SHEET_EVENTS } from '@shopgate/pwa-ui-shared/Sheet';
 import {
   widgetKey,
   pagesWithoutWidget,
@@ -31,7 +33,6 @@ try {
 
 export default (subscribe) => {
   let messenger = null;
-  let ready = false;
 
   /**
    * Hides the Userlike Messenger button and notifications while keeping the main widget visible.
@@ -50,7 +51,7 @@ export default (subscribe) => {
 
   /**
    * Shows the Userlike Messenger main widget, button, and notifications.
-   * @returns {Promise<void>} Resolves once visibility has been updated or immediatel
+   * @returns {Promise<void>} Resolves once visibility has been updated or immediately
    */
   const showWidget = async () => {
     if (!messenger) {
@@ -119,7 +120,6 @@ export default (subscribe) => {
       }
 
       messenger = mountResult.value;
-      ready = true;
 
       const state = getState();
       const pattern = makeGetRoutePattern()(state);
@@ -127,6 +127,13 @@ export default (subscribe) => {
       if (pagesWithoutWidget.includes(pattern)) {
         hideWidget();
       }
+
+      UIEvents.addListener(SHEET_EVENTS.OPEN, hideWidget);
+      UIEvents.addListener(SHEET_EVENTS.CLOSE, () => {
+        if (!pagesWithoutWidget.includes(pattern)) {
+          showWidget();
+        }
+      });
 
       await setUser(getState);
     });
@@ -181,7 +188,7 @@ export default (subscribe) => {
   subscribe(userDataReceived$, async ({ getState }) => {
     const isUserTrackingAllowed = getAreStatisticsCookiesAccepted(getState());
 
-    if (!messenger || !ready || !isUserTrackingAllowed) {
+    if (!messenger || !isUserTrackingAllowed) {
       return;
     }
 
@@ -189,7 +196,7 @@ export default (subscribe) => {
   });
 
   subscribe(userDidLogout$, async () => {
-    if (!messenger || !ready) {
+    if (!messenger) {
       return;
     }
 
