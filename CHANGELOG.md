@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.2.1 - 2025-06-06
+## [1.3.0] 2025-09-09
+### Fixed
+- Replaced the deprecated `userlikeReady` callback with the `createMessenger` API and subscription-based initialization.
+- Removed deprecated `userlikeShowButton` / `userlikeHideButton` calls; widget visibility is now controlled via `messenger.setVisibility`.
+- Updated configuration key from `sdkUrl` to `widgetKey`
+
+## [1.2.1] 2025-06-06
 ### Fixed
 - Fixed positioning above the PWA footer elements
 - Fixed visibility logic for `pagesWithoutWidget` config setting

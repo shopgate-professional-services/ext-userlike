@@ -1,11 +1,12 @@
 import { css } from 'glamor';
+import { createMessenger } from '@userlike/messenger';
 import { appDidStart$, logger, routeDidEnter$ } from '@shopgate/engage/core';
 import { userDataReceived$, userDidLogout$ } from '@shopgate/engage/user';
 import { makeGetRoutePattern } from '@shopgate/pwa-common/selectors/router';
 import UIEvents from '@shopgate/pwa-core/emitters/ui';
 import { SHEET_EVENTS } from '@shopgate/pwa-ui-shared/Sheet';
 import {
-  sdkUrl,
+  widgetKey,
   pagesWithoutWidget,
   iframeChatTitle,
   iframeBackgroundColor,
@@ -31,35 +32,114 @@ try {
 }
 
 export default (subscribe) => {
-  const { style } = document.documentElement;
-  let ready = false;
-
-  // Flag to indicate if "live chat" or "unified messaging" is used
-  let isUMWidget = false;
+  let messenger = null;
 
   /**
-   *  Hides the userlike button
+   * Hides the Userlike Messenger button and notifications while keeping the main widget visible.
+   * @returns {Promise<void>} Resolves once initialization is complete or fails.
    */
-  const hideWidget = () => {
-    if (isUMWidget) {
-      style.setProperty('--userlike-um-display', 'none');
-    } else {
-      window.userlike.userlikeHideButton();
+  const hideWidget = async () => {
+    if (!messenger) {
+      return;
     }
+    await messenger.setVisibility({
+      main: true,
+      button: false,
+      notifications: false,
+    });
   };
 
   /**
-   *  Shows the userlike button again
+   * Shows the Userlike Messenger main widget, button, and notifications.
+   * @returns {Promise<void>} Resolves once visibility has been updated or immediately
    */
-  const showWidget = () => {
-    if (isUMWidget) {
-      style.setProperty('--userlike-um-display', 'block');
-    } else {
-      window.userlike.userlikeShowButton();
+  const showWidget = async () => {
+    if (!messenger) {
+      return;
     }
+    await messenger.setVisibility({
+      main: true,
+      button: true,
+      notifications: true,
+    });
   };
 
-  subscribe(comfortCookiesAccepted$, ({ getState }) => {
+  /**
+   * Sets the Userlike Messenger contact information
+   * @param {Function} getState - The current application state.
+   * @returns {Promise<void>} Resolves once the contact info is set or exits if no user.
+   */
+  const setUser = async (getState) => {
+    if (!messenger) {
+      return;
+    }
+
+    const user = getUserData(getState());
+    if (!user) {
+      return;
+    }
+
+    await messenger.setContactInfo({
+      name: user.name || '',
+      email: user.mail || '',
+    });
+  };
+
+  /**
+   * Initializes the Userlike Messenger widget
+   * @param {Function} getState - The current application state.
+   * @returns {Promise<void>} Resolves once initialization is complete or fails.
+   */
+  const initMessenger = async (getState) => {
+    if (!widgetKey) {
+      logger.warn('No Userlike widget key configured');
+      return;
+    }
+
+    const result = await createMessenger({
+      version: 2,
+      widgetKey,
+    });
+
+    if (result.kind === 'error') {
+      logger.error('Userlike init error:', result.error);
+      return;
+    }
+
+    const { api } = result.value;
+
+    api.mount().subscribe(async (mountResult) => {
+      if (mountResult.kind === 'error') {
+        logger.error(mountResult.error);
+        return;
+      }
+
+      if (mountResult.value === null) {
+        logger.log('Userlike messenger not mounted');
+        return;
+      }
+
+      messenger = mountResult.value;
+
+      const state = getState();
+      const pattern = makeGetRoutePattern()(state);
+
+      if (pagesWithoutWidget.includes(pattern)) {
+        hideWidget();
+      }
+
+      UIEvents.addListener(SHEET_EVENTS.OPEN, hideWidget);
+      UIEvents.addListener(SHEET_EVENTS.CLOSE, () => {
+        if (!pagesWithoutWidget.includes(pattern)) {
+          showWidget();
+        }
+      });
+
+      await setUser(getState);
+    });
+  };
+
+  subscribe(comfortCookiesAccepted$, async ({ getState }) => {
     const isTablet = getIsTablet(getState());
 
     // "live chat" -> userlike-tab. "UM" -> #uslk-button
@@ -102,83 +182,29 @@ export default (subscribe) => {
       bottom: 'var(--safe-area-inset-bottom)',
     });
 
-    if (!sdkUrl) {
-      logger.warn('Userlike: No url configured');
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.src = sdkUrl;
-    const parent = document.getElementsByTagName('head')[0];
-    parent.appendChild(script);
-
-    // callback that gets called from script if ready
-    window.userlikeReady = () => {
-      ready = true;
-      const state = getState();
-      const pattern = makeGetRoutePattern()(state);
-
-      // new UM does not have an getData function (yet?)
-      isUMWidget = typeof window.userlike.getData !== 'function';
-
-      if (pagesWithoutWidget.includes(pattern)) {
-        hideWidget();
-      }
-
-      UIEvents.addListener(SHEET_EVENTS.OPEN, hideWidget);
-      UIEvents.addListener(SHEET_EVENTS.CLOSE, () => {
-        const currentPattern = makeGetRoutePattern()(getState());
-
-        if (!pagesWithoutWidget.includes(currentPattern)) {
-          showWidget();
-        }
-      });
-
-      const user = getUserData(state);
-
-      if (!user) {
-        return;
-      }
-
-      window.userlike.setData({ user });
-      window.userlike.userlikeUpdateAPI();
-    };
+    await initMessenger(getState);
   });
 
-  subscribe(userDataReceived$, ({ getState }) => {
+  subscribe(userDataReceived$, async ({ getState }) => {
     const isUserTrackingAllowed = getAreStatisticsCookiesAccepted(getState());
 
-    if (!window.userlike || !ready || !isUserTrackingAllowed) {
+    if (!messenger || !isUserTrackingAllowed) {
       return;
     }
 
-    const user = getUserData(getState());
-
-    if (!user) {
-      return;
-    }
-
-    window.userlike.setData({ user });
-    window.userlike.userlikeUpdateAPI();
+    await setUser(getState);
   });
 
-  subscribe(userDidLogout$, () => {
-    if (!window.userlike || !ready) {
+  subscribe(userDidLogout$, async () => {
+    if (!messenger) {
       return;
     }
 
-    window.userlike.setData({});
-    window.userlike.userlikeUpdateAPI();
+    await messenger.logout();
   });
 
   if (pagesWithoutWidget && pagesWithoutWidget.length) {
     subscribe(routeDidEnter$, ({ action }) => {
-      if (!window.userlike) {
-        return;
-      }
-
       if (pagesWithoutWidget.includes(action.route.pattern)) {
         hideWidget();
       } else {
@@ -187,4 +213,3 @@ export default (subscribe) => {
     });
   }
 };
-
