@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.0] 2026-10-02
+### Added
+- Support for both integration methods in a single version. The `widgetKey` integration (via `@userlike/messenger`) remains the default; the legacy JavaScript SDK file integration (`sdkUrl`) can be selected again.
+- New `integrationType` select (`auto`, `widgetKey`, `sdkUrl`). The default `auto` detects the method from the configured keys, so upgrades from 1.2.x (`sdkUrl`) and 1.3.x (`widgetKey`) keep working without manual changes.
+- Re-introduced the `sdkUrl` config key (removed in 1.3.0).
+
+### Changed
+- Split the integration logic into two adapters (`frontend/integrations/messengerWidget.js`, `frontend/integrations/sdkScript.js`) behind a shared subscriptions wiring.
+- Updated the lint toolchain to the current `@shopgate` 7.31 line.
+- Platform modules are now imported via `@shopgate/engage` instead of deep `@shopgate/pwa-*` imports (requires PWA 6.8.0 or newer, as before; now declared as `@shopgate/engage` peer dependency).
+
+### Fixed
+- Customer name and email are only passed to Userlike when statistics cookies were accepted – this now also applies when the chat starts, not only on later user data updates.
+- Widget key integration: the customer's email address is now passed to Userlike.
+- Widget key integration: closing a sheet now checks the current page against `pagesWithoutWidget` instead of the page the widget was mounted on.
+- Widget key integration: a failing Userlike script load is logged instead of causing an unhandled promise rejection.
+- Widget key integration: sheet listeners are registered only once, even if the messenger mounts again, and an unmounted messenger is no longer addressed.
+
+### Upgrade notes
+- Stores upgrading from 1.2.x should check `iframeChatTitle`: its default changed from `"Kundensupport-Chat"` to `"Chat"` in 1.3.0. If the value was never saved, the safe-area styling no longer matches the chat iframe.
+
 ## [1.3.0] 2025-09-09
 ### Fixed
 - Replaced the deprecated `userlikeReady` callback with the `createMessenger` API and subscription-based initialization.

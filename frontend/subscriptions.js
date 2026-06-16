@@ -1,17 +1,19 @@
 import { css } from 'glamor';
-import { createMessenger } from '@userlike/messenger';
-import { appDidStart$, logger, routeDidEnter$ } from '@shopgate/engage/core';
+import { appDidStart$, routeDidEnter$ } from '@shopgate/engage/core';
 import { userDataReceived$, userDidLogout$ } from '@shopgate/engage/user';
-import { makeGetRoutePattern } from '@shopgate/pwa-common/selectors/router';
-import UIEvents from '@shopgate/pwa-core/emitters/ui';
-import { SHEET_EVENTS } from '@shopgate/pwa-ui-shared/Sheet';
-import {
+import config from './config.json';
+import { getIsTablet } from './selectors';
+import createMessengerWidget from './integrations/messengerWidget';
+import createSdkScript from './integrations/sdkScript';
+
+const {
   widgetKey,
+  sdkUrl,
+  integrationType,
   pagesWithoutWidget,
   iframeChatTitle,
   iframeBackgroundColor,
-} from './config';
-import { getUserData, getIsTablet } from './selectors';
+} = config;
 
 let comfortCookiesAccepted$;
 let getAreStatisticsCookiesAccepted;
@@ -31,113 +33,31 @@ try {
   getAreStatisticsCookiesAccepted = () => true;
 }
 
+/**
+ * Resolves the active integration method.
+ *
+ * An explicit `integrationType` config value always wins. When it is 'auto' or not set (e.g. after
+ * an upgrade from an older version that didn't have this key), the method is auto-detected from the
+ * configured keys so that existing installations keep working: 1.2.x stores set only `sdkUrl`,
+ * 1.3.x stores set only `widgetKey`. Fresh installs without any key default to `widgetKey`.
+ * @returns {string} Either 'widgetKey' or 'sdkUrl'.
+ */
+const resolveIntegrationType = () => {
+  if (integrationType === 'widgetKey' || integrationType === 'sdkUrl') {
+    return integrationType;
+  }
+
+  if (!widgetKey && sdkUrl) {
+    return 'sdkUrl';
+  }
+
+  return 'widgetKey';
+};
+
 export default (subscribe) => {
-  let messenger = null;
-
-  /**
-   * Hides the Userlike Messenger button and notifications while keeping the main widget visible.
-   * @returns {Promise<void>} Resolves once initialization is complete or fails.
-   */
-  const hideWidget = async () => {
-    if (!messenger) {
-      return;
-    }
-    await messenger.setVisibility({
-      main: true,
-      button: false,
-      notifications: false,
-    });
-  };
-
-  /**
-   * Shows the Userlike Messenger main widget, button, and notifications.
-   * @returns {Promise<void>} Resolves once visibility has been updated or immediately
-   */
-  const showWidget = async () => {
-    if (!messenger) {
-      return;
-    }
-    await messenger.setVisibility({
-      main: true,
-      button: true,
-      notifications: true,
-    });
-  };
-
-  /**
-   * Sets the Userlike Messenger contact information
-   * @param {Function} getState - The current application state.
-   * @returns {Promise<void>} Resolves once the contact info is set or exits if no user.
-   */
-  const setUser = async (getState) => {
-    if (!messenger) {
-      return;
-    }
-
-    const user = getUserData(getState());
-    if (!user) {
-      return;
-    }
-
-    await messenger.setContactInfo({
-      name: user.name || '',
-      email: user.mail || '',
-    });
-  };
-
-  /**
-   * Initializes the Userlike Messenger widget
-   * @param {Function} getState - The current application state.
-   * @returns {Promise<void>} Resolves once initialization is complete or fails.
-   */
-  const initMessenger = async (getState) => {
-    if (!widgetKey) {
-      logger.warn('No Userlike widget key configured');
-      return;
-    }
-
-    const result = await createMessenger({
-      version: 2,
-      widgetKey,
-    });
-
-    if (result.kind === 'error') {
-      logger.error('Userlike init error:', result.error);
-      return;
-    }
-
-    const { api } = result.value;
-
-    api.mount().subscribe(async (mountResult) => {
-      if (mountResult.kind === 'error') {
-        logger.error(mountResult.error);
-        return;
-      }
-
-      if (mountResult.value === null) {
-        logger.log('Userlike messenger not mounted');
-        return;
-      }
-
-      messenger = mountResult.value;
-
-      const state = getState();
-      const pattern = makeGetRoutePattern()(state);
-
-      if (pagesWithoutWidget.includes(pattern)) {
-        hideWidget();
-      }
-
-      UIEvents.addListener(SHEET_EVENTS.OPEN, hideWidget);
-      UIEvents.addListener(SHEET_EVENTS.CLOSE, () => {
-        if (!pagesWithoutWidget.includes(pattern)) {
-          showWidget();
-        }
-      });
-
-      await setUser(getState);
-    });
-  };
+  const integration = resolveIntegrationType() === 'sdkUrl'
+    ? createSdkScript(getAreStatisticsCookiesAccepted)
+    : createMessengerWidget(getAreStatisticsCookiesAccepted);
 
   subscribe(comfortCookiesAccepted$, async ({ getState }) => {
     const isTablet = getIsTablet(getState());
@@ -182,33 +102,23 @@ export default (subscribe) => {
       bottom: 'var(--safe-area-inset-bottom)',
     });
 
-    await initMessenger(getState);
+    await integration.init(getState);
   });
 
   subscribe(userDataReceived$, async ({ getState }) => {
-    const isUserTrackingAllowed = getAreStatisticsCookiesAccepted(getState());
-
-    if (!messenger || !isUserTrackingAllowed) {
-      return;
-    }
-
-    await setUser(getState);
+    await integration.setUser(getState);
   });
 
   subscribe(userDidLogout$, async () => {
-    if (!messenger) {
-      return;
-    }
-
-    await messenger.logout();
+    await integration.logout();
   });
 
   if (pagesWithoutWidget && pagesWithoutWidget.length) {
     subscribe(routeDidEnter$, ({ action }) => {
       if (pagesWithoutWidget.includes(action.route.pattern)) {
-        hideWidget();
+        integration.hideWidget();
       } else {
-        showWidget();
+        integration.showWidget();
       }
     });
   }
