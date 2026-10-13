@@ -15,8 +15,5 @@
   },
   "dependencies": {
     "@userlike/messenger": "^2.0.1"
-  },
-  "peerDependencies": {
-    "@shopgate/engage": ">=6.8.0"
   }
 }

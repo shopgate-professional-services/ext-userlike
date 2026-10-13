@@ -29,7 +29,7 @@ export default (isUserTrackingAllowed) => {
       return;
     }
 
-    if (!window.userlike) {
+    if (!window.userlike || !ready) {
       return;
     }
     window.userlike.userlikeHideButton();
@@ -45,7 +45,7 @@ export default (isUserTrackingAllowed) => {
       return;
     }
 
-    if (!window.userlike) {
+    if (!window.userlike || !ready) {
       return;
     }
     window.userlike.userlikeShowButton();

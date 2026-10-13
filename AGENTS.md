@@ -70,8 +70,9 @@ Do not copy Knowledge Base content into this file. Keep AGENTS.md focused on thi
   defaults / admin values. It is gitignored — never commit it.
 - Import it as a default import with the `.json` extension (`import config from './config.json'`)
   and destructure; no named imports from JSON.
-- `frontend/.eslintrc` ignores `config\.json$` for `import/no-unresolved`, so lint passes with and
-  without the generated file.
+- Without the generated file, lint reports a `missing-extension-config` warning on the
+  `config.json` imports. Start the frontend once with the extension attached to create it; don't
+  change code or the ESLint config to hide the warning.
 
 ## Testing Notes
 

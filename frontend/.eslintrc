@@ -1,7 +1,4 @@
 {
   "root": true,
-  "extends": "@shopgate/eslint-config",
-  "rules": {
-    "import/no-unresolved": ["error", { "commonjs": true, "caseSensitive": true, "ignore": ["config\\.json$"] }]
-  }
+  "extends": "@shopgate/eslint-config"
 }
