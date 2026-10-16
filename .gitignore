@@ -61,10 +61,8 @@ typings/
 .idea/
 .vscode/
 
-# package-lock
-package-lock.json
-yarn.lock
+# macOS
+.DS_Store
 
 # config
-extension/config.json
-frontend/config.json
+**/config.json
