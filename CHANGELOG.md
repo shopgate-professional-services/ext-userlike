@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Changed
 - Split the integration logic into two adapters (`frontend/integrations/messengerWidget.js`, `frontend/integrations/sdkScript.js`) behind a shared subscriptions wiring.
-- Updated the lint toolchain to the current `@shopgate` 7.31 line.
+- Updated the lint toolchain to the current `@shopgate` 7.33 line.
 - Platform modules are now imported via `@shopgate/engage` instead of deep `@shopgate/pwa-*` imports (requires PWA 6.8.0 or newer, as before).
 
 ### Fixed
