@@ -116,6 +116,11 @@ export default (isUserTrackingAllowed) => {
 
     const { api } = result.value;
 
+    if (!api) {
+      logger.error('Userlike init error: messenger API version reached end-of-life');
+      return;
+    }
+
     api.mount().subscribe(async (mountResult) => {
       if (mountResult.kind === 'error') {
         logger.error(mountResult.error);
