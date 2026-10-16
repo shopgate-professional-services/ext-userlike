@@ -4,13 +4,16 @@
   "description": "",
   "license": "Apache-2.0",
   "scripts": {
-    "lint": "eslint --ignore-path ../.gitignore --ext .js --ext .jsx ."
+    "lint": "eslint --ignore-path ../.gitignore --ext .js,.jsx ."
   },
   "devDependencies": {
-    "@shopgate/engage": "^7.31.9",
-    "@shopgate/eslint-config": "^7.31.9",
+    "@shopgate/engage": "^7.33.1",
+    "@shopgate/eslint-config": "^7.33.1",
+    "@shopgate/pwa-unit-test": "^7.33.1",
     "eslint": "^8.57.1",
     "glamor": "^2.20.40",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "reselect": "^4.1.8"
   },
   "dependencies": {

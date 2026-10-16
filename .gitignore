@@ -64,9 +64,5 @@ typings/
 # macOS
 .DS_Store
 
-# package-lock
-package-lock.json
-yarn.lock
-
 # config
 **/config.json

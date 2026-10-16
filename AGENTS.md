@@ -29,7 +29,7 @@ Frontend only — there is no backend (`extension/`) part.
 - Shopgate PWA / Engage – platform modules are imported via `@shopgate/engage/*` only. The used
   exports (`makeGetRoutePattern`, `UIEvents`, `SHEET_EVENTS`) require PWA 6.8.0 or newer.
 - `@userlike/messenger` (only runtime dependency), `glamor` for global CSS, `reselect`.
-- npm; ESLint 8 with `@shopgate/eslint-config` 7.31 line.
+- npm; ESLint 8 with `@shopgate/eslint-config` 7.33 line.
 - No tests, no CI configuration in the repo.
 
 ## Common Commands
